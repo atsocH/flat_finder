@@ -45,7 +45,7 @@ function Register() {
             setErrorMsg(
                 <ul>
                     {!v1 && <li>Username inválido. Lembre-se de usar de 3 a 10 caracteres.</li>}
-                    {!v2 && <li>Senha inválida. A sua password deve conter uma letra maiúscula, uma minúscula, um número e um caractere especial, com no mínimo 8 caracteres.</li>}
+                    {!v2 && <li>Password inválida. A sua password deve conter uma letra maiúscula, uma minúscula, um número e um caractere especial, com no mínimo 8 caracteres.</li>}
                     {!v3 && <li>E-mail inválido.</li>}
                 </ul>
             );
