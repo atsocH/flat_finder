@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { db } from '../config/firebase';
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { UserContext } from '../config/usercontex';
+import { AuthContext } from '../config/authcontex';
 
 function Login() {
     const navigate = useNavigate();
@@ -14,25 +16,33 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMsg] = useState('');
+
+    const { setIsAuthenticated } = useContext(AuthContext);
+    const { setUser} = useContext(UserContext)
   
     useEffect(() => {
         userRef.current.focus();
     }, []);
 
     const handleLogin = async (e) => {
+        e.preventDefault();
 
         const data = await getDocs(usersCollectionRef);
         const usersList = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-        const findUser = usersList.find(user => (user.email === email) && user.password === password);
+        const findUser = usersList.find(user => (user.email === email));
         const auth = getAuth();
-        if (findUser) {
-            setErrorMsg('');
-            navigate('/', {state: {Logname: findUser.name}}); 
-            signInWithEmailAndPassword(auth, email, password)
-        } else {
-            setErrorMsg('Username ou password inválidos. Tente novamente.');
+
+            try { 
+                await signInWithEmailAndPassword(auth, email, password);
+                setErrorMsg('');
+                navigate('/'); 
+                setIsAuthenticated(true);
+                setUser(findUser.name);
             
+        } catch (error){
+            setErrorMsg('Username ou password inválidos. Tente novamente.');
+            setIsAuthenticated(false);
         }
     };
 

@@ -1,15 +1,17 @@
-import { useLocation } from "react-router-dom";
+import { useContext } from "react";
 import Navbar from "./Navebar";
+import { UserContext } from '../config/usercontex';
+
 
 
 function Home(){
-    const location = useLocation();
-    const {Logname} = location.state || {};
-    const {Regname} = location.state || {};
+
+    const {user} = useContext(UserContext)
+
     return(
         <div>
             <Navbar />
-            <h2>WELCOME TO MY WEBSITE {Logname || Regname}</h2>
+            <h2>WELCOME TO MY WEBSITE {user}</h2>
             <p>Hello world</p>
         </div>
     )
