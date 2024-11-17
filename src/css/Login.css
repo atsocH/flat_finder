@@ -1,0 +1,144 @@
+/* Estilo geral da página de Login */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f7c5c5, #f7f1e3); /* Fundo dinâmico */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+
+
+/* Título */
+.login-container h1 {
+    font-size: 1.8rem;
+    color: #e63946;
+    margin-bottom: 1.5rem;
+}
+
+
+/* Labels */
+.login-container label {
+    font-weight: bold;
+    color: #4d4d4d;
+    margin-bottom: 0.5rem;
+}
+
+/* Inputs */
+.login-container input {
+    padding: 0.8rem;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+}
+
+.login-container input:focus {
+    border-color: #ff7f50;
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 127, 80, 0.5);
+}
+
+/* Botões */
+.login-container button {
+    background-color: #06d6a0;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.login-container button:hover {
+    background-color: #04b383;
+    transform: scale(1.05);
+}
+
+/* Texto */
+.login-container p {
+    font-size: 1rem;
+    color: #555;
+    margin-top: 1rem;
+}
+
+/* Mensagem de erro */
+.login-container .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+/* Comentários */
+.comments-section {
+    margin-top: 1rem;
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+}
+
+.comments-section h4 {
+    margin-bottom: 0.5rem;
+    color: #4d4d4d;
+    font-size: 1.2rem;
+}
+
+.comments-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.comments-section ul li {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #f7f1e3;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.comments-section ul li span {
+    font-weight: bold;
+    color: #e63946;
+}
+
+.comments-section textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    resize: none;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section textarea:focus {
+    border-color: #06d6a0;
+    outline: none;
+    box-shadow: 0 0 5px rgba(6, 214, 160, 0.5);
+}
+
+.comments-section button {
+    background-color: #06d6a0;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.comments-section button:hover {
+    background-color: #04b383;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

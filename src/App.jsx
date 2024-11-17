@@ -4,6 +4,8 @@ import Home from './componentes/Home';
 import Login from './componentes/Login';
 import  {AuthContextProvider}  from './config/authcontex';
 import  {UserContextProvider}  from './config/usercontex';
+import FlatsForm from './componentes/Flats';
+import Teste from './componentes/Teste';
 
 
 function App() {
@@ -11,10 +13,12 @@ function App() {
     <AuthContextProvider>
       <UserContextProvider>
         <Routes>
+          <Route path='/teste' element={<Teste />} />
           <Route path='/' element={<Home />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
-      </Routes>
+          <Route path='/flats' element={<FlatsForm />} />
+        </Routes>
     </UserContextProvider>
   </AuthContextProvider>
   );

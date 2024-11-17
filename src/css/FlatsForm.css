@@ -1,0 +1,141 @@
+/* Estilo geral da página */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f7c5c5, #f7f1e3); /* Fundo mais dinâmico */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container principal do formulário */
+form {
+    background: #ffd166; /* Cor mais apelativa para o formulário */
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    max-width: 700px; /* Largura máxima ajustada */
+    width: 90%;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Divisão em duas colunas */
+    grid-gap: 1.5rem; /* Espaçamento entre os elementos */
+    align-items: start;
+    position: relative;
+}
+
+/* Título do formulário */
+form h1 {
+    grid-column: span 2; /* Faz o título ocupar toda a largura do formulário */
+    text-align: center; /* Centraliza o título */
+    margin-bottom: 1.5rem; /* Espaçamento abaixo do título */
+    font-size: 1.8rem; /* Tamanho da fonte do título */
+    color: #e63946; /* Cor vermelha destacada */
+    font-weight: bold;
+}
+
+/* Estilo dos campos do formulário */
+form div {
+    display: flex;
+    flex-direction: column;
+    grid-column: span 1;
+}
+
+form div.full-width {
+    grid-column: span 2; /* Elementos que ocupam a largura total */
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #4d4d4d;
+}
+
+input, textarea {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+}
+
+input:focus, textarea:focus {
+    border-color: #ff7f50;
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 127, 80, 0.5);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Botão principal */
+button[type="submit"] {
+    background-color: #06d6a0; /* Cor vibrante para o botão */
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+    grid-column: span 2;
+    justify-self: center;
+    width: 50%;
+}
+
+button[type="submit"]:hover {
+    background-color: #04b383;
+    transform: scale(1.05);
+}
+
+/* Botão de upload de imagem */
+button.MuiButton-root {
+    background-color: #118ab2;
+    color: white;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+button.MuiButton-root:hover {
+    background-color: #0a6178;
+    transform: scale(1.05);
+}
+
+/* Mensagens de erro */
+form div p {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+/* Títulos e mensagens gerais */
+form div span {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Estilo do checkbox */
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    form {
+        grid-template-columns: 1fr; /* Ajusta para uma coluna no mobile */
+        grid-gap: 1rem;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+    }
+}

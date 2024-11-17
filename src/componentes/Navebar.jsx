@@ -1,40 +1,34 @@
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../config/authcontex';
+import { UserContext } from '../config/usercontex';
 import { useContext } from 'react';
+import '../css/Navbar.css';
 
 
 export default function Navbar() {
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+    const { setUser } = useContext(UserContext);
 
-  const {isAuthenticated} = useContext(AuthContext)
-  
-  const styles = {
-    ul: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      listStyle: 'none',
-      margin: 0,
-      padding: '0.2em',
-      backgroundColor: 'rgba(127, 127, 127, 0.2)',
-    },
-  };
-    if(isAuthenticated){ 
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        setUser(''); // Faz o logout
+    };
+
     return (
-      <div>
         <nav>
-          <ul style={styles.ul}>
-            <li><Link to='/'>Home</Link></li>
-          </ul>
-        </nav>
-      </div>
-      )} else {
-        return ( 
-          <div>
-            <ul style={styles.ul}>
-              <li><Link to='/'>Home</Link></li>
-              <li><Link to='/register'>Registar/Login</Link></li>
+            <ul>
+                <li><Link to='/'>Home</Link></li>
+                {isAuthenticated ? (
+                    <>
+                        <li><Link to='/flats'>Flats</Link></li>
+                        <li>
+                            <Link to='/' onClick={handleLogout}>Logout</Link>
+                        </li>
+                    </>
+                ) : (
+                    <li><Link to='/register'>Registar/Login</Link></li>
+                )}
             </ul>
-          </div>
-      )}
-    ;
+        </nav>
+    );
 }

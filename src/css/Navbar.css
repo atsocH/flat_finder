@@ -1,0 +1,52 @@
+/* Navbar harmonizada com cores suaves de amarelo e vermelho */
+nav {
+    background-color: #ffe599; /* Fundo amarelo claro */
+    padding: 1rem;
+    border-bottom: 2px solid #f4cccc; /* Linha inferior em vermelho claro */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil para destaque */
+    width: 100%; /* Garante que a navbar ocupe toda a largura */
+}
+
+/* Lista de navegação organizada horizontalmente */
+ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilo dos itens da lista */
+li {
+    margin: 0 1rem;
+}
+
+/* Links com aparência elegante */
+li a {
+    text-decoration: none;
+    color: #b22222; /* Vermelho escuro */
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efeito hover para os links */
+li a:hover {
+    background-color: #b22222; /* Vermelho escuro ao passar o mouse */
+    color: #fff; /* Texto branco no hover */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Alinhamento responsivo para telas menores */
+@media (max-width: 768px) {
+    ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    li {
+        margin: 0.5rem 0;
+    }
+}

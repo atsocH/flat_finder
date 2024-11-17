@@ -5,21 +5,22 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { UserContext } from '../config/usercontex';
 import { AuthContext } from '../config/authcontex';
+import '../css/Login.css';
 
 function Login() {
     const navigate = useNavigate();
 
     const userRef = useRef();
     const errRef = useRef();
-    
+
     const usersCollectionRef = collection(db, "users");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMsg] = useState('');
 
     const { setIsAuthenticated } = useContext(AuthContext);
-    const { setUser} = useContext(UserContext)
-  
+    const { setUser } = useContext(UserContext);
+
     useEffect(() => {
         userRef.current.focus();
     }, []);
@@ -27,35 +28,47 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const data = await getDocs(usersCollectionRef);
-        const usersList = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        try {
+            const auth = getAuth();
+            await signInWithEmailAndPassword(auth, email, password);
 
-        const findUser = usersList.find(user => (user.email === email));
-        const auth = getAuth();
+            // Busca os usuários no Firestore
+            const data = await getDocs(usersCollectionRef);
+            const usersList = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-            try { 
-                await signInWithEmailAndPassword(auth, email, password);
-                setErrorMsg('');
-                navigate('/'); 
-                setIsAuthenticated(true);
-                setUser(findUser.name);
-            
-        } catch (error){
-            setErrorMsg('Username ou password inválidos. Tente novamente.');
+            // Encontra o usuário pelo email
+            const findUser = usersList.find(user => user.email === email);
+
+            if (!findUser) {
+                setErrorMsg('Usuário não encontrado. Verifique o email e tente novamente.');
+                setIsAuthenticated(false);
+                return;
+            }
+
+            // Define o nome do usuário no contexto global
+            setErrorMsg('');
+            setUser(findUser.name);
+            setIsAuthenticated(true);
+
+            // Redireciona para a página inicial
+            navigate('/');
+        } catch (error) {
+            console.error('Erro no login:', error);
+            setErrorMsg('Email ou senha inválidos. Tente novamente.');
             setIsAuthenticated(false);
         }
     };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form>
+        <div className='login-container'>
+            <form onSubmit={handleLogin}>
+                <h1>Login</h1>
                 <label>Email ou Username</label>
                 <input
                     type="text"
                     ref={userRef}
                     value={email}
-                    onChange={(e) => {setEmail(e.target.value)}}
+                    onChange={(e) => { setEmail(e.target.value); }}
                 />
                 <label>Password</label>
                 <input
@@ -63,11 +76,13 @@ function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                </form>
-                <button onClick={handleLogin}>Login</button>
+                <button type="submit">Login</button>
+                <br />
                 <p>Já registou a sua conta?</p>
-                <button onClick={() => navigate('/register')}>Registo</button>
-            <p ref={errRef} style={{ color: 'red' }}>{errorMessage}</p>
+                <br />
+                <button type="button" onClick={() => navigate('/register')}>Registo</button>
+                <p ref={errRef} className="error-message">{errorMessage}</p>
+            </form>
         </div>
     );
 }
