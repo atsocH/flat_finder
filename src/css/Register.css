@@ -1,143 +1,92 @@
-/* Estilo geral da página de Registro */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #f7c5c5, #f7f1e3); /* Fundo dinâmico */
+    background: linear-gradient(135deg, #f7c5c5, #ffe599);
     color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden; /* Evita rolagem desnecessária */
 }
 
-/* Container principal */
 .register-container {
-    background: #ffd166; /* Cor apelativa */
+    background: #ffe599;
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-    max-width: 400px; /* Largura ajustada para o quadrado */
-    width: 100%;
+    width: 450px;
     text-align: center;
-    position: relative;
-    z-index: 1; /* Garante que o contêiner fique acima de qualquer outro fundo */
+    max-width: 90%;
 }
 
-/* Título do formulário */
 .register-container h1 {
     text-align: center;
     margin-bottom: 1.5rem;
-    font-size: 1.8rem; /* Tamanho da fonte do título */
-    color: #e63946; /* Cor vermelha destacada */
+    font-size: 2rem;
+    color: #b22222;
     font-weight: bold;
 }
 
-/* Estilo dos campos do formulário */
-.register-container div {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
-label {
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    color: #4d4d4d;
+.register-container label {
+    display: block;
     text-align: left;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #4d4d4d;
 }
 
-input {
+.register-container input {
+    width: 100%;
     padding: 0.8rem;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 1rem;
-    color: #333;
-    background-color: #fff;
-    width: 100%;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
 }
 
-input:focus {
+.register-container input:focus {
     border-color: #ff7f50;
     outline: none;
     box-shadow: 0 0 8px rgba(255, 127, 80, 0.5);
 }
 
-/* Botão principal */
-button[type="submit"] {
-    background-color: #06d6a0; /* Cor vibrante para o botão */
+.register-container button {
+    background-color: #06d6a0;
     color: white;
     border: none;
     padding: 0.8rem;
     font-size: 1rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s;
     width: 100%;
+    transition: background-color 0.3s ease;
     margin-top: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-button[type="submit"]:hover {
+.register-container .reg-button {
+    background-color: #06d6a0;
+}
+
+.register-container .reg-button:hover {
     background-color: #04b383;
-    transform: scale(1.05);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Botão de navegação */
-button.nav-button {
-    background-color: #118ab2; /* Cor azul vibrante */
-    color: white;
-    border-radius: 8px;
-    padding: 0.8rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s;
-    width: auto;
+.register-container .log-button {
+    background-color: #118ab2;
     margin-top: 0.5rem;
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    font-weight: bold;
-    text-align: left; /* Alinha o botão à esquerda */
-    margin-left: 0; /* Encosta o botão à esquerda */
-    margin-right: auto;
 }
 
-button.nav-button:hover {
+.register-container .log-button:hover {
     background-color: #0a6178;
-    transform: scale(1.05);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-button.nav-button:hover {
-    background-color: #0a6178;
-    transform: scale(1.05);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-button.nav-button:hover {
-    background-color: #0a6178;
-    transform: scale(1.05);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Mensagens de erro */
-.register-container .error-message {
+.error-message {
     color: red;
     font-size: 0.9rem;
-    margin-top: 1rem;
-    text-align: center;
-}
-
-/* Responsividade */
-@media (max-width: 600px) {
-    .register-container {
-        padding: 1.5rem;
-    }
-
-    button[type="submit"],
-    button.nav-button {
-        width: 100%;
-    }
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    font-weight: bold;
 }

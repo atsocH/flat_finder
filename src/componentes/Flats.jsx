@@ -1,228 +1,213 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { getAuth } from 'firebase/auth';
 import { db } from '../config/firebase';
-import { collection, addDoc } from "firebase/firestore";
-import Button from '@mui/material/Button';
-import '../css/FlatsForm.css'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { collection, getDocs, doc, updateDoc, arrayUnion, where, query } from 'firebase/firestore';
+import Navbar from './Navebar';
+import Filtros from './Filtros';
+import '../css/Flats.css';
+import { UserContext } from '../config/usercontex';
+import { FilterContext } from '../config/filtercontext';
+import { Button, TextField, CircularProgress } from '@mui/material';
 
-const NAME_REGEX = /^[a-zA-Z\s]+$/;
-const STREETNUMBER_REGEX = /^[0-9]+$/;
-const YEARBUILT_REGEX = /^(18|20)\d{2}$/;
-const RENTPRICE_REGEX = /^[0-9]+(\.[0-9]{1,2})?$/;
+function Flats() {
+    const [flats, setFlats] = useState([]);
+    const [newComments, setNewComments] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const { user } = useContext(UserContext);
+    const { filters } = useContext(FilterContext);
 
-function FlatsForm() {
-    const userRef = useRef();
-    const errRef = useRef();
 
-    const [flatName, setFlatName] = useState('');
-    const [cityName, setCityName] = useState('');
-    const [streetName, setStreetName] = useState('');
-    const [streetNumber, setStreetNumber] = useState('');
-    const [area, setArea] = useState('');
-    const [hasAc, setHasAc] = useState(false);
-    const [yearBuilt, setYearBuilt] = useState('');
-    const [rentPrice, setRentPrice] = useState('');
-    const [imageFile, setImageFile] = useState(null);
-    const [errorMsg, setErrorMsg] = useState('');
+    useEffect(() => {
+        const fetchFlats = async () => {
+            setIsLoading(true);
+            try {
+                const flatsCollection = collection(db, 'flats');
+                const flatsSnapshot = await getDocs(flatsCollection);
+                let flatsList = flatsSnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+
+                if (filters.city) {
+                    flatsList = flatsList.filter((flat) =>
+                        flat.cityName.toLowerCase().includes(filters.city.toLowerCase())
+                    );
+                }
+                if (filters.minPrice) {
+                    flatsList = flatsList.filter((flat) => flat.rentPrice >= filters.minPrice);
+                }
+                if (filters.maxPrice) {
+                    flatsList = flatsList.filter((flat) => flat.rentPrice <= filters.maxPrice);
+                }
+                if (filters.hasAc) {
+                    flatsList = flatsList.filter((flat) => flat.hasAc === true);
+                }
+
+                setFlats(flatsList);
+            } catch (error) {
+                console.error('Erro ao encontrar e filtrar os imóveis:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchFlats();
+    }, [filters]);
+
+    const handleAddFavorite = async (flatId) => {
+        try {
+            const auth = getAuth();
+            const userUID = auth.currentUser?.uid;
     
-    const [isValidFlatName, setIsValidFlatName] = useState();
-    const [isValidCityName, setIsValidCityName] = useState();
-    const [isValidStreetName, setIsValidStreetName] = useState();
-    const [isValidStreetNumber, setIsValidStreetNumber] = useState();
-    const [isValidYearBuilt, setIsValidYearBuilt] = useState();
-    const [isValidRentPrice, setIsValidRentPrice] = useState();
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        userRef.current.focus();
-    }, []);
-
-    useEffect(() => {
-        setIsValidFlatName(NAME_REGEX.test(flatName));
-    }, [flatName]);
-
-    useEffect(() => {
-        setIsValidCityName(NAME_REGEX.test(cityName));
-    }, [cityName]);
-
-    useEffect(() => {
-        setIsValidStreetName(NAME_REGEX.test(streetName));
-    }, [streetName]);
-
-    useEffect(() => {
-        setIsValidStreetNumber(STREETNUMBER_REGEX.test(streetNumber));
-    }, [streetNumber]);
-
-    useEffect(() => {
-        setIsValidYearBuilt(YEARBUILT_REGEX.test(yearBuilt));
-    }, [yearBuilt]);
-
-    useEffect(() => {
-        setIsValidRentPrice(RENTPRICE_REGEX.test(rentPrice));
-    }, [rentPrice]);
-
-    const handleImageUpload = () => {
-        if (!imageFile) return null;
-
-        const reader = new FileReader();
-        reader.readAsDataURL(imageFile);
-
-        reader.onload = () => {
-            const base64String = reader.result.split(',')[1]; // Remove o prefixo
-            localStorage.setItem(`image-${imageFile.name}`, base64String); // Salva no localStorage
-        };
-
-        reader.onerror = (error) => {
-            console.error("Erro ao salvar a imagem no localStorage:", error);
-        };
-
-        return `image-${imageFile.name}`; // Retorna a chave do localStorage
+            if (!userUID) {
+                console.error("User não autenticado.");
+                return;
+            }
+    
+            const usersCollection = collection(db, "users");
+            const q = query(usersCollection, where("authUID", "==", userUID));
+            const querySnapshot = await getDocs(q);
+    
+            if (querySnapshot.empty) {
+                console.error("Documento do user não encontrado no Firestore.");
+                return;
+            }
+    
+            const userDocRef = doc(db, "users", querySnapshot.docs[0].id);
+    
+            await updateDoc(userDocRef, {
+                favorites: arrayUnion(flatId),
+            });
+    
+            console.log(`Flat ID ${flatId} adicionado aos favoritos com sucesso.`);
+        } catch (error) {
+            console.error("Erro ao adicionar favorito:", error);
+        }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!isValidFlatName || !isValidCityName || !isValidStreetName || 
-            !isValidStreetNumber || !isValidYearBuilt || !isValidRentPrice) {
-            setErrorMsg("Preencha todos os campos corretamente.");
+    const handleAddComment = async (flatId) => {
+        if (!newComments[flatId] || !user) {
+            console.error('Comentário vazio ou user não identificado.');
             return;
         }
 
-        try {
-            const imageKey = handleImageUpload();
+        const commentWithUser = `${user}: ${newComments[flatId]}`;
 
-            await addDoc(collection(db, "flats"), {
-                flatName,
-                cityName,
-                streetName,
-                streetNumber,
-                area,
-                hasAc,
-                yearBuilt,
-                rentPrice,
-                imageKey,
-                comments: [],
+        try {
+            const flatDocRef = doc(db, 'flats', flatId);
+            await updateDoc(flatDocRef, {
+                comments: arrayUnion(commentWithUser),
             });
 
-            alert("Imóvel registado com sucesso!");
-            navigate("/");
+            setNewComments((prevComments) => ({
+                ...prevComments,
+                [flatId]: '',
+            }));
+
+            setFlats((prevFlats) =>
+                prevFlats.map((flat) =>
+                    flat.id === flatId
+                        ? { ...flat, comments: [...(flat.comments || []), commentWithUser] }
+                        : flat
+                )
+            );
         } catch (error) {
-            console.error("Erro ao adicionar o imóvel:");
+            console.error('Erro ao adicionar comentário:', error);
         }
     };
 
+
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>Registe aqui o seu Imóvel</h1>
-            {errorMsg && <div ref={errRef} style={{ color: 'red' }}>{errorMsg}</div>}
-            
-            <div>
-                <label>Nome do Imóvel: </label>
-                <input 
-                    type="text"
-                    ref={userRef}
-                    value={flatName}
-                    onChange={(e) => setFlatName(e.target.value)}
-                    required
-                />
-                {!isValidFlatName && <p style={{ color: 'red' }}>Este campo deve conter apenas letras.</p>}
+        <div className="home-page">
+            <h1>Bem-vindo ao Flat Finder{user}!</h1>
+            <Navbar />
+            <Filtros />
+            <div className="content">
+                {isLoading ? (
+                    <CircularProgress />
+                ) : (
+                    <div className="flats-container">
+                        {flats.length > 0 ? (
+                            flats.map((flat) => (
+                                <div
+                                    key={flat.id}
+                                    className="flat-card"
+                                >
+                                    <h3>{flat.flatName}</h3>
+                                    {flat.imageKeys && flat.imageKeys.length > 0 ? (
+                                        <img
+                                            src={`data:image/jpeg;base64,${localStorage.getItem(flat.imageKeys[0])}`}
+                                            alt={`Imagem de ${flat.flatName}`}
+                                            className="flat-image"
+                                        />
+                                    ) : (
+                                        <img
+                                            src="/path/to/default-image.jpg"
+                                            alt="Imagem padrão"
+                                            className="flat-image"
+                                        />
+                                    )}
+                                    <div className="topics">
+                                        <p><strong>Cidade:</strong> {flat.cityName}</p>
+                                        <p><strong>Rua:</strong> {flat.streetName} {flat.streetNumber}</p>
+                                        <p><strong>Área:</strong> {flat.area} m²</p>
+                                        <p><strong>Ano:</strong> {flat.yearBuilt}</p>
+                                        <p><strong>Preço do Aluguer:</strong> {flat.rentPrice} €</p>
+                                        <p><strong>Ar Condicionado:</strong> {flat.hasAc ? 'Sim' : 'Não'}</p>
+                                    </div>
+                                    <Button
+                                        variant="contained"
+                                        onClick={(e) => {handleAddFavorite(flat.id);}}
+                                        style={{ marginBottom: '1rem', textTransform: 'uppercase' }}
+                                    >
+                                        Adicionar aos Favoritos
+                                    </Button>
+                                    <div className="comments-section">
+                                        <TextField
+                                            label="Adicione um comentário"
+                                            multiline
+                                            rows={1}
+                                            value={newComments[flat.id] || ''}
+                                            onChange={(e) =>
+                                                setNewComments((prev) => ({
+                                                    ...prev,
+                                                    [flat.id]: e.target.value,
+                                                }))
+                                            }
+                                            fullWidth
+                                            style={{ marginBottom: '1rem' }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleAddComment(flat.id);
+                                            }}
+                                            style={{ textTransform: 'uppercase' }}
+                                        >
+                                            Comentar
+                                        </Button>
+                                        <ul>
+                                            {flat.comments && flat.comments.length > 0 ? (
+                                                flat.comments.map((comment, index) => (
+                                                    <li key={index}>{comment}</li>
+                                                ))
+                                            ) : (
+                                                <li>Sem comentários.</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p>Nenhum imóvel encontrado. Tente ajustar os filtros.</p>
+                        )}
+                    </div>
+                )}
             </div>
-            
-            <div>
-                <label>Cidade: </label>
-                <input 
-                    type="text"
-                    value={cityName}
-                    onChange={(e) => setCityName(e.target.value)}
-                    required
-                />
-                {!isValidCityName && <p style={{ color: 'red' }}>Este campo deve conter apenas letras.</p>}
-            </div>
-
-            <div>
-                <label>Nome da Rua: </label>
-                <input 
-                    type="text"
-                    value={streetName}
-                    onChange={(e) => setStreetName(e.target.value)}
-                    required
-                />
-                {!isValidStreetName && <p style={{ color: 'red' }}>Este campo deve conter apenas letras.</p>}
-            </div>
-
-            <div>
-                <label>Número da Rua: </label>
-                <input 
-                    type="text"
-                    value={streetNumber}
-                    onChange={(e) => setStreetNumber(e.target.value)}
-                    required
-                />
-                {!isValidStreetNumber && <p style={{ color: 'red' }}>Este campo deve conter apenas números.</p>}
-            </div>
-
-            <div>
-                <label>Área (m²): </label>
-                <input 
-                    type="text"
-                    value={area}
-                    onChange={(e) => setArea(e.target.value)}
-                    required
-                />
-            </div>
-
-            <div>
-                <label>Tem Ar Condicionado?</label>
-                <input 
-                    type="checkbox" 
-                    checked={hasAc} 
-                    onChange={(e) => setHasAc(e.target.checked)} 
-                />
-            </div>
-
-            <div>
-                <label>Ano de Construção: </label>
-                <input 
-                    type="text" 
-                    value={yearBuilt} 
-                    onChange={(e) => setYearBuilt(e.target.value)}
-                    required
-                />
-                {!isValidYearBuilt && <p style={{ color: 'red' }}>Ano inválido. Insira um ano entre 1800 e 2099.</p>}
-            </div>
-
-            <div>
-                <label>Preço do Aluguel: </label>
-                <input 
-                    type="text" 
-                    value={rentPrice} 
-                    onChange={(e) => setRentPrice(e.target.value)}
-                    required
-                />
-                {!isValidRentPrice && <p style={{ color: 'red' }}>Preço inválido. Use um número com até duas casas decimais.</p>}
-            </div>
-
-            <div>
-                <label>Imagem: </label>
-                <Button
-                    component="label"
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
-                >
-                    Upload
-                    <input
-                        type="file"
-                        hidden
-                        onChange={(event) => setImageFile(event.target.files[0])}
-                    />
-                </Button>
-                {imageFile && <p>{imageFile.name}</p>}
-            </div>
-            <button type="submit">Enviar</button>
-        </form>
+        </div>
     );
 }
 
-export default FlatsForm;
+export default Flats;

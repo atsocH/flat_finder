@@ -1,0 +1,46 @@
+.home-principal {
+    text-align: center;
+    background-color: #fce2ce;
+    background-image: url('../imagens/casaluxo.jpeg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    width: 100%;
+    padding: 2rem;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.welcome-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.welcome-section h1 {
+    font-size: 3rem;
+    color: #66440e;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.welcome-section p {
+    font-size: 1.6rem;
+    color: #333;
+}
+
+.filters-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1100px; 
+    margin: 0 auto;
+    padding: 1rem;
+    gap: 1.5rem;
+}
